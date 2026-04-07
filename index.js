@@ -1,4 +1,4 @@
-const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds, BufferJSON } = require('@whiskeysockets/baileys');
 const { Boom } = require('@hapi/boom');
 const pino = require('pino');
 const QRCode = require('qrcode');
@@ -49,12 +49,12 @@ async function useFirebaseAuthState() {
         const safe = key.replace(/[.#$[\]]/g, '_');
         const data = await fbGet(`botAuth/${safe}`);
         if (!data) return null;
-        try { return JSON.parse(data); } catch(e) { return data; }
+        try { return JSON.parse(data, BufferJSON.reviver); } catch(e) { return data; }
     }
 
     async function writeData(key, value) {
         const safe = key.replace(/[.#$[\]]/g, '_');
-        await fbSet(`botAuth/${safe}`, JSON.stringify(value));
+        await fbSet(`botAuth/${safe}`, JSON.stringify(value, BufferJSON.replacer));
     }
 
     async function removeData(key) {
