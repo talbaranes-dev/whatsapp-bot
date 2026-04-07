@@ -1,4 +1,4 @@
-const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds, Browsers } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds } = require('@whiskeysockets/baileys');
 const { Boom } = require('@hapi/boom');
 const pino = require('pino');
 const QRCode = require('qrcode');
@@ -182,18 +182,19 @@ app.listen(API_PORT, () => {
 
 async function startBot() {
     console.log('מפעיל בוט...');
-
+    try {
     const { state, saveCreds } = await useFirebaseAuthState();
+    console.log('Firebase auth loaded');
     const { version } = await fetchLatestBaileysVersion();
+    console.log('Baileys version:', version);
 
     sock = makeWASocket({
         version,
         auth: state,
-        logger: pino({ level: 'silent' }),
-        browser: Browsers.ubuntu('Chrome'),
+        logger: pino({ level: 'warn' }),
+        browser: ['Ubuntu', 'Chrome', '20.0.04'],
         keepAliveIntervalMs: 30000,
-        connectTimeoutMs: 60000,
-        retryRequestDelayMs: 2000
+        connectTimeoutMs: 60000
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -272,6 +273,10 @@ async function startBot() {
             }
         }
     });
+    } catch(err) {
+        console.error('startBot error:', err.message, err.stack);
+        setTimeout(startBot, 5000);
+    }
 }
 
 startBot().catch(err => {
