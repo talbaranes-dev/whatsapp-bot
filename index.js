@@ -124,6 +124,21 @@ app.get('/qr', (req, res) => {
     res.json({ connected: false, qr: lastQR });
 });
 
+app.get('/qr-view', (req, res) => {
+    if (isConnected) {
+        return res.send('<h2 style="font-family:sans-serif;text-align:center;margin-top:80px">✅ הבוט מחובר!</h2>');
+    }
+    if (!lastQR) {
+        return res.send('<h2 style="font-family:sans-serif;text-align:center;margin-top:80px">⏳ ממתין ל-QR... רענן בעוד 10 שניות</h2><script>setTimeout(()=>location.reload(),10000)</script>');
+    }
+    res.send(`<!DOCTYPE html><html><body style="display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background:#f5f5f5;flex-direction:column;font-family:sans-serif">
+        <h2>סרוק כדי לחבר WhatsApp</h2>
+        <img src="${lastQR}" style="width:300px;height:300px;border:8px solid white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15)"/>
+        <p style="color:#888;margin-top:16px">QR תקף לכ-60 שניות. רענן אם פג תוקפו.</p>
+        <script>setTimeout(()=>location.reload(),55000)</script>
+    </body></html>`);
+});
+
 app.post('/send', async (req, res) => {
     if (!isConnected || !sock) {
         return res.status(503).json({ success: false, error: 'הבוט לא מחובר' });
