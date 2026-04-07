@@ -1,4 +1,4 @@
-const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds, Browsers } = require('@whiskeysockets/baileys');
 const { Boom } = require('@hapi/boom');
 const pino = require('pino');
 const QRCode = require('qrcode');
@@ -190,8 +190,10 @@ async function startBot() {
         version,
         auth: state,
         logger: pino({ level: 'silent' }),
-        printQRInTerminal: true,
-        browser: ['WhatsApp Bot', 'Chrome', '1.0']
+        browser: Browsers.ubuntu('Chrome'),
+        keepAliveIntervalMs: 30000,
+        connectTimeoutMs: 60000,
+        retryRequestDelayMs: 2000
     });
 
     sock.ev.on('creds.update', saveCreds);
