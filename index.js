@@ -1,4 +1,4 @@
-const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds } = require('@whiskeysockets/baileys');
 const { Boom } = require('@hapi/boom');
 const pino = require('pino');
 const QRCode = require('qrcode');
@@ -62,7 +62,7 @@ async function useFirebaseAuthState() {
         await fbDel(`botAuth/${safe}`);
     }
 
-    const creds = await readData('creds') || {};
+    const creds = await readData('creds') || initAuthCreds();
 
     const state = {
         creds,
