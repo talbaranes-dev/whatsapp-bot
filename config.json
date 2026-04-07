@@ -1,0 +1,12 @@
+{
+  "firebaseDb": "https://fir-e9a0b-default-rtdb.firebaseio.com",
+  "rules": [
+    {
+      "keywords": ["היי אני רוצה להזמין"],
+      "response": "בשמחה ❤️ הינה קישור להזמנה אונליין\nhttps://pizzademoorder.bybe.co.il/",
+      "matchType": "exact"
+    }
+  ],
+  "defaultResponse": "",
+  "ignoreGroups": true
+}
