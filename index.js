@@ -192,7 +192,7 @@ async function startBot() {
         version,
         auth: state,
         logger: pino({ level: 'warn' }),
-        browser: ['Ubuntu', 'Chrome', '20.0.04'],
+        browser: ['WhatsApp', 'Chrome', '4.0.0'],
         keepAliveIntervalMs: 30000,
         connectTimeoutMs: 60000
     });
