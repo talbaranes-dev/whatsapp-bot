@@ -62,7 +62,10 @@ async function useFirebaseAuthState() {
         await fbDel(`botAuth/${safe}`);
     }
 
-    const creds = await readData('creds') || initAuthCreds();
+    let creds = await readData('creds');
+    if (!creds || !creds.noiseKey || !creds.noiseKey.private) {
+        creds = initAuthCreds();
+    }
 
     const state = {
         creds,
