@@ -163,6 +163,22 @@ app.post('/send', async (req, res) => {
     }
 });
 
+app.post('/pairing-code', async (req, res) => {
+    if (isConnected) return res.json({ success: false, error: 'הבוט כבר מחובר' });
+    if (!sock) return res.status(503).json({ success: false, error: 'הבוט לא מוכן עדיין' });
+    let { phone } = req.body;
+    if (!phone) return res.status(400).json({ success: false, error: 'חסר מספר טלפון' });
+    phone = phone.replace(/[\s\-()]/g, '');
+    if (phone.startsWith('0')) phone = '972' + phone.substring(1);
+    try {
+        const code = await sock.requestPairingCode(phone);
+        console.log(`קוד קישור ל-${phone}: ${code}`);
+        res.json({ success: true, code });
+    } catch(e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 app.post('/logout', async (req, res) => {
     try {
         isConnected = false;
@@ -198,7 +214,8 @@ async function startBot() {
         browser: Browsers.ubuntu('Chrome'),
         keepAliveIntervalMs: 30000,
         connectTimeoutMs: 60000,
-        markOnlineOnConnect: false
+        markOnlineOnConnect: false,
+        printQRInTerminal: false
     });
 
     sock.ev.on('creds.update', saveCreds);
