@@ -218,7 +218,8 @@ async function startBot() {
         markOnlineOnConnect: false,
         printQRInTerminal: false,
         syncFullHistory: false,
-        generateHighQualityLinkPreview: false
+        generateHighQualityLinkPreview: false,
+        getMessage: async () => ({ conversation: '' })
     });
 
     sock.ev.on('creds.update', saveCreds);
