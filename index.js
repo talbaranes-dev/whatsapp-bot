@@ -1,4 +1,4 @@
-const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds, BufferJSON } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, DisconnectReason, fetchLatestBaileysVersion, initAuthCreds, BufferJSON, Browsers } = require('@whiskeysockets/baileys');
 const { Boom } = require('@hapi/boom');
 const pino = require('pino');
 const QRCode = require('qrcode');
@@ -195,7 +195,7 @@ async function startBot() {
         version,
         auth: state,
         logger: pino({ level: 'warn' }),
-        browser: ['WhatsApp', 'Chrome', '4.0.0'],
+        browser: Browsers.ubuntu('Chrome'),
         keepAliveIntervalMs: 30000,
         connectTimeoutMs: 60000,
         markOnlineOnConnect: false
