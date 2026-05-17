@@ -300,10 +300,7 @@ async function startBot() {
                 }
             }
 
-            if (!matched) {
-                const defaultMsg = waMessages?.botOn || cfg.defaultResponse || '';
-                if (defaultMsg) await sock.sendMessage(chatId, { text: defaultMsg });
-            }
+            // בוט דלוק — מגיב רק לטריגרים, שאר ההודעות מתעלמים
         }
     });
     } catch(err) {
