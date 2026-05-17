@@ -300,8 +300,9 @@ async function startBot() {
                 }
             }
 
-            if (!matched && cfg.defaultResponse) {
-                await sock.sendMessage(chatId, { text: cfg.defaultResponse });
+            if (!matched) {
+                const defaultMsg = waMessages?.botOn || cfg.defaultResponse || '';
+                if (defaultMsg) await sock.sendMessage(chatId, { text: defaultMsg });
             }
         }
     });
