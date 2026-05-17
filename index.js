@@ -212,10 +212,13 @@ async function startBot() {
         auth: state,
         logger: pino({ level: 'warn' }),
         browser: ['WhatsApp', 'Chrome', '4.0.0'],
-        keepAliveIntervalMs: 30000,
-        connectTimeoutMs: 60000,
+        keepAliveIntervalMs: 25000,
+        connectTimeoutMs: 30000,
+        retryRequestDelayMs: 250,
         markOnlineOnConnect: false,
-        printQRInTerminal: false
+        printQRInTerminal: false,
+        syncFullHistory: false,
+        generateHighQualityLinkPreview: false
     });
 
     sock.ev.on('creds.update', saveCreds);
