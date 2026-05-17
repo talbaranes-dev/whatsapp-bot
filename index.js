@@ -246,7 +246,18 @@ async function startBot() {
             const cfg = loadConfig();
             const chatId = msg.key.remoteJid;
 
-            // קרא טריגרים מפיירבייס (עם fallback לconfig.json)
+            const storeOpen = await isStoreOpen();
+            const waMessages = await fbGet('settings/waMessages').catch(() => null);
+
+            // בוט כבוי — שלח הודעת "בוט כבוי" לכל הודעה
+            if (!storeOpen) {
+                const offMsg = waMessages?.botOff || 'היי, לצערנו אנחנו כרגע לא מקבלים הזמנות אונליין.';
+                console.log(`[${new Date().toLocaleString('he-IL')}] בוט כבוי → ${chatId}`);
+                await sock.sendMessage(chatId, { text: offMsg });
+                continue;
+            }
+
+            // בוט דלוק — בדוק טריגרים
             let rules = cfg.rules;
             try {
                 const fbRules = await fbGet('settings/botRules');
@@ -261,19 +272,9 @@ async function startBot() {
                 });
 
                 if (isMatch) {
-                    const storeOpen = await isStoreOpen();
-                    let response;
-                    try {
-                        const msgs = await fbGet('settings/waMessages');
-                        response = storeOpen
-                            ? (msgs?.botOn || rule.response)
-                            : (msgs?.botOff || 'היי, לצערנו אנחנו כרגע לא מקבלים הזמנות אונליין.');
-                    } catch(e) {
-                        response = storeOpen ? rule.response : 'היי, לצערנו אנחנו כרגע לא מקבלים הזמנות אונליין.';
-                    }
-
-                    console.log(`[${new Date().toLocaleString('he-IL')}] הודעה מ-${chatId}: "${text}" → חנות ${storeOpen ? 'פתוחה' : 'סגורה'}`);
-                    await sock.sendMessage(chatId, { text: response });
+                    const response = waMessages?.botOn || rule.response || '';
+                    console.log(`[${new Date().toLocaleString('he-IL')}] טריגר: "${text}" → ${chatId}`);
+                    if (response) await sock.sendMessage(chatId, { text: response });
                     matched = true;
                     break;
                 }
