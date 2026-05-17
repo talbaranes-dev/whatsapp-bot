@@ -151,7 +151,7 @@ app.post('/send', async (req, res) => {
         return res.status(400).json({ success: false, error: 'חסר מספר או הודעה' });
     }
     try {
-        let jid = phone.replace(/[\s\-()]/g, '');
+        let jid = phone.replace(/[\s\-()]/g, '').replace(/@c\.us$/, '').replace(/@s\.whatsapp\.net$/, '');
         if (jid.startsWith('0')) jid = '972' + jid.substring(1);
         if (!jid.includes('@')) jid = jid + '@s.whatsapp.net';
         await sock.sendMessage(jid, { text: message });
@@ -257,6 +257,7 @@ async function startBot() {
 
     sock.ev.on('messages.upsert', async ({ messages, type }) => {
         if (type !== 'notify') return;
+        const cfg = loadConfig();
         for (const msg of messages) {
             if (msg.key.fromMe) continue;
             if (msg.key.remoteJid?.endsWith('@g.us')) continue;
@@ -264,7 +265,6 @@ async function startBot() {
             const text = (msg.message?.conversation || msg.message?.extendedTextMessage?.text || '').trim();
             if (!text) continue;
 
-            const cfg = loadConfig();
             const chatId = msg.key.remoteJid;
 
             const storeOpen = await isStoreOpen();
