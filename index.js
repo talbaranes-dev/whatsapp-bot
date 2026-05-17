@@ -246,8 +246,15 @@ async function startBot() {
             const cfg = loadConfig();
             const chatId = msg.key.remoteJid;
 
+            // קרא טריגרים מפיירבייס (עם fallback לconfig.json)
+            let rules = cfg.rules;
+            try {
+                const fbRules = await fbGet('settings/botRules');
+                if (Array.isArray(fbRules) && fbRules.length > 0) rules = fbRules;
+            } catch(e) {}
+
             let matched = false;
-            for (const rule of cfg.rules) {
+            for (const rule of rules) {
                 const isMatch = rule.keywords.some(kw => {
                     if (rule.matchType === 'exact') return text.toLowerCase() === kw.toLowerCase();
                     return text.toLowerCase().includes(kw.toLowerCase());
