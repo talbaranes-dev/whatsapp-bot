@@ -292,7 +292,7 @@ async function startBot() {
                 });
 
                 if (isMatch) {
-                    const response = waMessages?.botOn || rule.response || '';
+                    const response = rule.response || waMessages?.botOn || '';
                     console.log(`[${new Date().toLocaleString('he-IL')}] טריגר: "${text}" → ${chatId}`);
                     if (response) await sock.sendMessage(chatId, { text: response });
                     matched = true;
@@ -300,7 +300,10 @@ async function startBot() {
                 }
             }
 
-            // בוט דלוק — מגיב רק לטריגרים, שאר ההודעות מתעלמים
+            if (!matched) {
+                const defaultMsg = waMessages?.botOn || '';
+                if (defaultMsg) await sock.sendMessage(chatId, { text: defaultMsg });
+            }
         }
     });
     } catch(err) {
