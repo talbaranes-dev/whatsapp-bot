@@ -205,7 +205,7 @@ app.post('/logout', async (req, res) => {
 
 const PAYPLUS_API_KEY  = '578796ae-9c09-40f0-a726-b4d4e660fe6d';
 const PAYPLUS_SECRET   = 'd1a70071-67dd-4d88-a6f7-a2f0ee2f40df';
-const PAYPLUS_PAGE_UID = 'da1d2349-34ad-4631-bb73-6724e36cdccf';
+const PAYPLUS_PAGE_UID = '74d9154a-6736-4e35-890a-601573f194fd';
 const PAYPLUS_URL      = 'https://restapidev.payplus.co.il/api/v1.0/PaymentPages/generateLink';
 const SITE_URL         = 'https://pizzademoorder.bybe.co.il';
 
