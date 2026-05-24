@@ -193,6 +193,60 @@ app.post('/logout', async (req, res) => {
     }
 });
 
+// ── PayPlus ──────────────────────────────────────────
+
+const PAYPLUS_API_KEY  = '578796ae-9c09-40f0-a726-b4d4e660fe6d';
+const PAYPLUS_SECRET   = 'd1a70071-67dd-4d88-a6f7-a2f0ee2f40df';
+const PAYPLUS_PAGE_UID = 'da1d2349-34ad-4631-bb73-6724e36cdccf';
+const PAYPLUS_URL      = 'https://restapidev.payplus.co.il/api/v1.0/PaymentPages/generateLink';
+const SITE_URL         = 'https://pizzademoorder.bybe.co.il';
+
+app.post('/create-payment', async (req, res) => {
+    const { amount, orderId, orderKey, customerName, customerPhone } = req.body;
+    if (!amount || !orderKey) return res.status(400).json({ success: false, error: 'חסר מידע' });
+    try {
+        const ppRes = await fetch(PAYPLUS_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': JSON.stringify({ api_key: PAYPLUS_API_KEY, secret_key: PAYPLUS_SECRET })
+            },
+            body: JSON.stringify({
+                payment_page_uid: PAYPLUS_PAGE_UID,
+                amount: parseFloat(amount),
+                currency_code: 'ILS',
+                charge_method: 1,
+                refURL_success: `${SITE_URL}/?payment=success&key=${orderKey}`,
+                refURL_failure: `${SITE_URL}/?payment=failed&key=${orderKey}`,
+                refURL_cancel:  `${SITE_URL}/?payment=cancel&key=${orderKey}`,
+                refURL_origin:  SITE_URL,
+                customer: {
+                    customer_name: customerName || '',
+                    phone: (customerPhone || '').replace(/[^0-9]/g, '')
+                },
+                items: [{
+                    name: `הזמנה #${orderId || ''}`,
+                    quantity: 1,
+                    price: parseFloat(amount),
+                    vat_type: 0
+                }],
+                sendEmailApproval: false,
+                sendEmailFailure: false
+            })
+        });
+        const data = await ppRes.json();
+        console.log('PayPlus response:', JSON.stringify(data));
+        if (data.results?.status === 'success') {
+            res.json({ success: true, url: data.data.payment_page_link });
+        } else {
+            res.json({ success: false, error: data.results?.description || 'שגיאה מ-PayPlus' });
+        }
+    } catch(e) {
+        console.error('PayPlus error:', e.message);
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 app.listen(API_PORT, () => {
     console.log(`שרת API פועל על פורט ${API_PORT}`);
 });
