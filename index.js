@@ -239,7 +239,8 @@ app.post('/create-payment', async (req, res) => {
         if (data.results?.status === 'success') {
             res.json({ success: true, url: data.data.payment_page_link });
         } else {
-            res.json({ success: false, error: data.results?.description || 'שגיאה מ-PayPlus' });
+            const errMsg = data.results?.description || data.message || JSON.stringify(data);
+            res.json({ success: false, error: errMsg });
         }
     } catch(e) {
         console.error('PayPlus error:', e.message);
