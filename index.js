@@ -122,6 +122,14 @@ app.get('/status', (req, res) => {
     res.json({ connected: isConnected });
 });
 
+app.get('/my-ip', async (req, res) => {
+    try {
+        const r = await fetch('https://api.ipify.org?format=json');
+        const d = await r.json();
+        res.json(d);
+    } catch(e) { res.json({ ip: 'unknown' }); }
+});
+
 app.get('/qr', (req, res) => {
     if (isConnected) return res.json({ connected: true, qr: null });
     res.json({ connected: false, qr: lastQR });
