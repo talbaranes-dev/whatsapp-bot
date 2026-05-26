@@ -364,10 +364,7 @@ async function startBot() {
                 }
             }
 
-            if (!matched) {
-                const defaultMsg = waMessages?.botOn || '';
-                if (defaultMsg) await sock.sendMessage(chatId, { text: defaultMsg });
-            }
+            // אם לא מתאים טריגר — המנהל עונה ידנית, הבוט לא מגיב
         }
     });
     } catch(err) {
